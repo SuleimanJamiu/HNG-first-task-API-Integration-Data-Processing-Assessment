@@ -3,7 +3,6 @@ const axios = require("axios");
 const checkGender = async (req, res) => {
     const { name } = req.query;
 
-    // Validate name parameter
     if (!name || name.trim() === '') {
         return res.status(400).json({ status: "error", message: "Missing or empty name parameter" });
     }
@@ -17,13 +16,12 @@ const checkGender = async (req, res) => {
     try {
         const response = await axios.get(url);
         const data = response.data;
-
-        // Check for edge cases
+        //console.log("Received data:", data);
+        
         if (data.gender === null || data.count === 0) {
             return res.status(200).json({ status: "error", message: "No prediction available for the provided name" });
         }
 
-        // Process the data
         const { gender, probability, count } = data;
         const sample_size = count;
         const is_confident = probability >= 0.7 && sample_size >= 100;
@@ -44,10 +42,8 @@ const checkGender = async (req, res) => {
         return res.status(200).json(result);
     } catch (err) {
         if (err.response) {
-            // Upstream error
             return res.status(502).json({ status: "error", message: "Upstream service error" });
         } else {
-            // Server error
             return res.status(500).json({ status: "error", message: "Internal server error" });
         }
     }
